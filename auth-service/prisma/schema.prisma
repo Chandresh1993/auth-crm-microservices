@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+   id           String   @id @default(cuid())
+  username     String   @unique
+  email        String   @unique
+  password     String
+  accessRole   Role     @default(user)
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  admin
+  manager
+  user
+}
+
+
+
+model FailedWebhookLog {
+  id            String   @id @default(uuid())
+  userId        String
+  eventPayload  Json
+  attemptCount  Int      @default(0)
+  lastAttemptAt DateTime?
+  status        status
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+}
+
+enum status {
+  PENDING
+  FAILED
+  SUCCESS
+}
+
+model LoginHistory {
+  id        String   @id @default(uuid())
+  userId    String
+  email     String
+  role      String
+  ip        String?
+  userAgent String?
+  loginAt   DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
